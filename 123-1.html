@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>智能聊天機器人</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">智能聊天機器人</div>
+        <div class="chat-box" id="chatBox">
+            </div>
+        <div class="input-area">
+            <input type="file" id="fileInput" accept="image/jpeg, image/png" style="display: none;">
+            <button class="icon-btn" onclick="document.getElementById('fileInput').click()">📎</button>
+            <input type="text" id="userInput" placeholder="輸入訊息..." onkeypress="handleKeyPress(event)">
+            <button class="send-btn" onclick="sendMessage()">⬆</button>
+        </div>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById('chatBox');
+        const userInput = document.getElementById('userInput');
+        const fileInput = document.getElementById('fileInput');
+
+        // 送出文字訊息
+        function sendMessage() {
+            const text = userInput.value.trim();
+            if (text === "") return;
+
+            appendMessage(text, 'user');
+            userInput.value = ""; // 清空輸入框
+
+            // 模擬機器人回覆
+            setTimeout(() => {
+                appendMessage("已收到訊息！", 'bot');
+            }, 500);
+        }
+
+        // 處理 Enter 鍵
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+
+        // 處理圖片上傳
+        fileInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (!file) return;
+
+            // 檢查大小 (5MB = 5 * 1024 * 1024 bytes)
+            if (file.size > 5242880) {
+                alert("檔案大小不能超過 5MB");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                appendImage(e.target.result, 'user');
+                setTimeout(() => {
+                    appendMessage("已收到圖片！", 'bot');
+                }, 500);
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function appendMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerText = text;
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function appendImage(src, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message img-msg`;
+            const img = document.createElement('img');
+            img.src = src;
+            div.appendChild(img);
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+</body>
+</html>
